@@ -1,0 +1,41 @@
+@font-face { 
+  font-family: 'SFPro';
+  src: url("assets/fonts/SFPro/heavy.ttf") format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face { 
+  font-family: 'SFPro';
+  src: url("assets/fonts/SFPro/bold.ttf") format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face { 
+  font-family: 'SFPro';
+  src: url("assets/fonts/SFPro/semibold.ttf") format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face { 
+  font-family: 'SFPro';
+  src: url("assets/fonts/SFPro/medium.ttf") format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face { 
+  font-family: 'SFPro';
+  src: url("assets/fonts/SFPro/regular.ttf") format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face { 
+  font-family: 'SFPro';
+  src: url("assets/fonts/SFPro/light.ttf") format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
