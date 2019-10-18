@@ -1,7 +1,6 @@
 import React from "react";
-import { decode } from "jsonwebtoken";
 
-import { getCookie } from "helpers/cookie";
+import { api } from "helpers/api";
 
 const AuthStateContext = React.createContext();
 
@@ -9,7 +8,6 @@ const authReducer = (state, action) => {
   switch (action.type) {
     case "setUser":
       return {
-        ...state,
         user: action.payload,
         isAuthenticated: true
       };
@@ -19,31 +17,33 @@ const authReducer = (state, action) => {
 };
 
 const initialState = {
-  user: undefined,
+  user: null,
   isAuthenticated: false
 };
 
-const AuthProvider = props => {
+const AuthProvider = (props) => {
   const [state, dispatch] = React.useReducer(authReducer, initialState);
 
   React.useEffect(() => {
-    const { email, id, first_name, last_name } = decode(getCookie("tokenn"));
-    dispatch({
-      type: "setUser",
-      payload: {
-        email,
-        id,
-        first_name,
-        last_name
-      }
-    });
+    const handleResponse = (response) => {
+      const user = response.data.user;
+      dispatch({
+        type: "setUser",
+        payload: user
+      });
+    };
+
+    api
+      .get("/users/me")
+      .then(handleResponse)
+      .catch((error) => console.log(error.response));
   }, []);
 
-  return (
-    <AuthStateContext.Provider value={state}>
-      {props.children}
-    </AuthStateContext.Provider>
-  );
+  if (!state.isAuthenticated) {
+    return null;
+  }
+
+  return <AuthStateContext.Provider value={state}>{props.children}</AuthStateContext.Provider>;
 };
 
 const useAuthState = () => {

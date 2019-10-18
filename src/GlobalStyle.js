@@ -10,11 +10,8 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    background-color: ${({ theme }) => theme.colors.white};
-    font-family: ${({ theme }) => theme.base.fontFamily};
+    font-family: ${(props) => props.theme.base.fontFamily};
     font-weight: 400;
-    height: 100%;
-    user-select: none;
   }
 
   button, input, textarea {
@@ -27,7 +24,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   img {
-    display: block;
+    vertical-align: middle;
   }
 
   ul {

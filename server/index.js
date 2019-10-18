@@ -6,20 +6,25 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const session = require("express-session");
 const http = require("http");
+const cookieParser = require("cookie-parser");
 const WebSocketServer = require("websocket").server;
 
-const authRouter = require("./routes/auth");
+const auth = require("./routes/auth");
+const profile = require("./routes/profile");
+const users = require("./routes/users");
 const webSocket = require("./webSocket");
+const { authenticated } = require("./middleware/auth");
 
 const app = express();
 
 // middleware
 app.use(morgan("dev"));
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(
   cors({
     credentials: true,
-    origin: "https://localhost:3000"
+    origin: "http://localhost:3000"
   })
 );
 app.use(
@@ -30,12 +35,14 @@ app.use(
   })
 );
 
-app.use("/api/auth", authRouter);
+app.use("/api/auth", auth);
+app.use("/api/profile", profile);
+app.use("/api/users", authenticated, users);
 
 const port = process.env.PORT || 5000;
 const server = http.createServer(app);
 
-server.listen(port, function() {
+server.listen(port, () => {
   console.log("Server is listening on http://localhost:5000");
 });
 

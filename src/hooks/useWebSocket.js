@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-
 import queryString from "query-string";
-import {
-  createOrJoinSocket,
-  attachListeners,
-  connectionStatus
-} from "helpers/websocket";
+
+import { createOrJoinSocket, attachListeners, connectionStatus } from "helpers/websocket";
 
 const useWebSocket = (url, options = {}) => {
   const [readyState, setReadyState] = useState({});
@@ -16,27 +12,18 @@ const useWebSocket = (url, options = {}) => {
     const { queryParams } = options;
     url += "?" + queryString.stringify(queryParams);
     createOrJoinSocket(webSocketRef, url, setReadyState);
-    const i = attachListeners(
-      webSocketRef.current,
-      url,
-      setReadyState,
-      options
-    );
-    return i;
+    const listenersFunc = attachListeners(webSocketRef.current, url, setReadyState, options);
+    return listenersFunc;
   }, []);
 
-  // send message to server
-  const send = useCallback(message => {
+  const send = useCallback((message) => {
     if (webSocketRef) {
       message = JSON.stringify(message);
       webSocketRef.current.send(message);
     }
   });
 
-  const readyStateFromUrl =
-    readyState[url] !== undefined
-      ? readyState[url]
-      : connectionStatus.CONNECTING;
+  const readyStateFromUrl = readyState[url] !== undefined ? readyState[url] : connectionStatus.CONNECTING;
 
   return [send, readyStateFromUrl];
 };

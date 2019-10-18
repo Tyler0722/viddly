@@ -1,11 +1,9 @@
 const merge = require("webpack-merge");
-const fs = require("fs");
 const path = require("path");
 
 const common = require("./webpack.common.js");
 
 module.exports = merge(common, {
-  devtool: "eval",
   devServer: {
     contentBase: path.resolve(__dirname, "build"),
     historyApiFallback: true,
@@ -14,5 +12,6 @@ module.exports = merge(common, {
     port: 3000,
     watchContentBase: true
   },
+  devtool: "eval",
   mode: "development"
 });

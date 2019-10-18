@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import queryString from "query-string";
 
 import { CLIENT_URL, GOOGLE_LOGIN_URL } from "helpers/constants";

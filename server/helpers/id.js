@@ -1,6 +1,10 @@
-module.exports = () => {
+/**
+ * Generate random id
+ * @param {Number} length Length of id
+ * @returns {String} Random generated id
+ */
+const genId = (length = 12) => {
   const chars = "0123456789";
-  const length = 8;
   let str = "";
   for (let i = 0; i < length; i++) {
     const rnum = Math.floor(Math.random() * chars.length);
@@ -8,3 +12,5 @@ module.exports = () => {
   }
   return str;
 };
+
+module.exports = { genId };

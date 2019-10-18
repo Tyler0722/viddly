@@ -1,8 +1,3 @@
-# client build directory
-build/
-
-# node_modules
-node_modules/
-
-# enviroment variables
 .env
+build/
+node_modules/

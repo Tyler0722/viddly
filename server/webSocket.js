@@ -1,75 +1,82 @@
-const sessions = [];
-const connections = [];
-
-const MAX_SESSION_SIZE = 2;
-
 const { verify } = require("jsonwebtoken");
 
-const genId = require("./helpers/genId");
+function Call() {
+  this.participants = [];
+  this.status = 0; // pending (0), accepted (1), declined (2)
 
-function Session() {
-  this.id = genId();
-  this.users = [];
-
-  this.isJoinable = false;
-
-  this.addUser = function(user) {
-    this.users.push(user);
-    this.isJoinable = this.users.length < MAX_SESSION_SIZE;
+  this.addParticipant = function(user) {
+    this.participants.push(user);
     return this;
   };
 }
 
-const findSessionById = id => {
-  return sessions.find(function(session) {
-    return session.id == id;
-  });
-};
+module.exports = (socketServer) => {
+  const connections = {};
 
-module.exports = socketServer => {
+  const calls = [];
+
+  const sendTo = (userId, message) => {
+    const connection = connections[userId];
+    if (connection) {
+      connections[userId].sendUTF(JSON.stringify(message));
+    }
+  };
+
   // socket stuff
-  socketServer.on("request", req => {
-    const token = req.cookies.find(cookie => cookie.name === "token").value;
-
-    const sessionId = req.resourceURL.query.sessionId;
+  socketServer.on("request", (req) => {
+    const token = req.cookies.find((cookie) => cookie.name === "token").value;
 
     verify(token, process.env.JWT_SECRET, function(error, decoded) {
       if (error) {
         return req.reject(401);
       }
 
-      const { id, username } = decoded;
+      const { uid } = decoded;
       const connection = req.accept("json", req.origin);
-      let session = findSessionById(sessionId);
-      const user = {
-        id,
-        username
-      };
 
-      if (!connections.find(connection => connection.id == id)) {
-        connection.id = id;
-        connections.push(connection);
+      if (!connections[uid]) {
+        connections[uid] = connection;
       }
 
-      if (session && session.isJoinable) {
-        session.addUser(user);
-      } else {
-        session = new Session();
+      connection.on("message", function(message) {
+        if (message.type === "utf8") {
+          message = JSON.parse(message.utf8Data);
 
-        session.addUser(user);
-        sessions.push(session);
-      }
+          let sendToClient = true;
 
-      connection.sendUTF(
-        JSON.stringify({
-          type: "joined_session",
-          session
-        })
-      );
+          switch (message.type) {
+            // called user request video call with user
+            case "videoOffer":
+              const call = new Call().addParticipant(uid);
+              calls.push(call);
+              const { participants, status } = call;
+              sendTo(message.to, {
+                type: "videoOffer",
+                call: {
+                  participants,
+                  status
+                },
+                sdp: message.sdp
+              });
+              sendToClient = false;
+              break;
+            case "accept":
+              const _call = calls.find((call) => call.participants.find((p) => p == message.to));
+              _call.status = 1;
+              _call.addParticipant(uid);
+              sendTo(message.to, { type: "accept", call: _call });
+              break;
+          }
 
-      connection.on("message", function(message) {});
+          if (sendToClient) {
+            sendTo(message.to, message);
+          }
+        }
+      });
 
-      connection.on("close", function() {});
+      connection.on("close", () => {
+        delete connections[uid];
+      });
     });
   });
 };
