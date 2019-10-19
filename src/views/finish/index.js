@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 
-import { useAuthState } from "context/auth";
+import { useAuthState, useAuthDispatch, updateUser } from "context/auth";
 import { GenderPicker } from "components";
+
+import { api } from "helpers/api";
 
 const Finish = (props) => {
   const { user } = useAuthState();
+  const authDispatch = useAuthDispatch();
 
   const [username, setUsername] = useState(user.username || "");
   const [gender, setGender] = useState(null);
@@ -29,19 +32,34 @@ const Finish = (props) => {
     });
   };
 
+  const clean = (obj) => {
+    for (let prop in obj) {
+      if (obj[prop] === null) {
+        delete obj[prop];
+      }
+    }
+  };
+
   const handleSave = () => {
     const errors = {};
-    if (username.length < 3) {
+    if (username.length === 0) {
+      errors.username = "Username is required";
+    } else if (username.length < 3) {
       errors.username = "Username must be 3 or more characters";
     } else if (username.length > 18) {
       errors.username = "Username must be 18 or less characters";
-    } else if (username.length === 0) {
-      errors.username = "Username is required";
     }
     if (gender === null) {
       errors.gender = "Gender is required";
     }
-    setErrors(errors);
+    clean(errors);
+    if (Object.keys(errors).length > 0) {
+      return setErrors(errors);
+    }
+    updateUser(authDispatch, {
+      username,
+      gender
+    }).then((user) => props.history.push("/"));
   };
 
   return (
@@ -50,7 +68,6 @@ const Finish = (props) => {
         <label htmlFor="username">Username</label>
         <input
           autoComplete="off"
-          disabled={user.username}
           id="username"
           name="username"
           onChange={handleUsernameChange}
@@ -64,9 +81,7 @@ const Finish = (props) => {
         <GenderPicker onSelect={handleSelection} />
         <div>{errors.gender}</div>
       </div>
-      <button onClick={handleSave}>
-        Save
-      </button>
+      <button onClick={handleSave}>Save</button>
     </>
   );
 };

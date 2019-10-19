@@ -14,3 +14,4 @@ Keep track of features, bugs, fixes, ideas, etc.
 - [] Add refresh tokens to make current authentication more secure.
 - [x] Save token in cookie and have client make request to /api/users/me to get authenticated user.
 - [] Refactor code for validation for finish view .
+- [] Finish input validation for /api/users/me

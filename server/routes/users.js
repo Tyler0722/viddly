@@ -15,4 +15,16 @@ router.get("/me", (req, res) => {
   });
 });
 
+router.put("/me", (req, res) => {
+  const { username, gender } = req.body;
+  const query =
+    'UPDATE "user" SET username = $1, gender = $2 WHERE id = $3 RETURNING id, gender, profile_pic, first_name, last_name, username';
+  db.query(query, [username, gender, req.session.uid]).then((result) => {
+    const user = result.rows[0];
+    res.json({
+      user
+    });
+  });
+});
+
 module.exports = router;

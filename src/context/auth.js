@@ -3,6 +3,7 @@ import React from "react";
 import { api } from "helpers/api";
 
 const AuthStateContext = React.createContext();
+const AuthDispatchContext = React.createContext();
 
 const authReducer = (state, action) => {
   switch (action.type) {
@@ -43,7 +44,11 @@ const AuthProvider = (props) => {
     return null;
   }
 
-  return <AuthStateContext.Provider value={state}>{props.children}</AuthStateContext.Provider>;
+  return (
+    <AuthStateContext.Provider value={state}>
+      <AuthDispatchContext.Provider value={dispatch}>{props.children}</AuthDispatchContext.Provider>
+    </AuthStateContext.Provider>
+  );
 };
 
 const useAuthState = () => {
@@ -51,4 +56,20 @@ const useAuthState = () => {
   return context;
 };
 
-export { AuthProvider, useAuthState };
+const useAuthDispatch = () => {
+  const context = React.useContext(AuthDispatchContext);
+  return context;
+};
+
+const updateUser = (dispatch, updates) => {
+  return api.put("/users/me", updates).then((response) => {
+    const user = response.data.user;
+    dispatch({
+      type: "setUser",
+      payload: user
+    });
+    return user;
+  });
+};
+
+export { AuthProvider, useAuthState, useAuthDispatch, updateUser };
