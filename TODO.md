@@ -13,3 +13,4 @@ Keep track of features, bugs, fixes, ideas, etc.
 - [] Refactor code to make codebase look better :)
 - [] Add refresh tokens to make current authentication more secure.
 - [x] Save token in cookie and have client make request to /api/users/me to get authenticated user.
+- [] Refactor code for validation for finish view .
