@@ -67,24 +67,23 @@ router.get("/callback", (req, res) => {
 
       return db.query(selectQuery, [email]).then((result) => {
         const user = result.rows[0];
-
         if (user) {
-          handleRedirect(res, user.id, redirectUrl);
-        } else {
-          const id = genId();
-          const insertQuery =
-            'INSERT INTO "user" (id, gender, email, profile_pic, first_name, last_name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
-          const insertValues = [id, null, email, picture, given_name, family_name];
-          return db.query(insertQuery, insertValues);
+          return user;
         }
+        const insertQuery =
+          'INSERT INTO "user" (id, gender, email, profile_pic, first_name, last_name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
+        const insertValues = [genId(), null, email, picture, given_name, family_name];
+        return db.query(insertQuery, insertValues).then((result) => {
+          const user = result.rows[0];
+          return user;
+        });
       });
     })
-    .then((result) => {
-      const user = result.rows[0];
+    .then((user) => {
       handleRedirect(res, user.id, redirectUrl);
     })
     .catch((error) => {
-      console.error(error);
+      console.error(error.message);
     });
 });
 

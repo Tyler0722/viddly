@@ -59,7 +59,7 @@ const Finish = (props) => {
     updateUser(authDispatch, {
       username,
       gender
-    }).then((user) => props.history.push("/"));
+    }).then((user) => props.history.push("/join"));
   };
 
   return (

@@ -22,12 +22,12 @@ export const attachListeners = (webSocket, url, setReadyState, options) => {
   const { onMessage, onOpen, onClose, onError } = options;
 
   // call when message is received from server
-  webSocket.onmessage = event => {
-    const message = JSON.parse(event.data);
-    if (onMessage) {
-      onMessage(message);
-    }
-  };
+  // webSocket.onmessage = event => {
+  //   const message = JSON.parse(event.data);
+  //   if (onMessage) {
+  //     onMessage(message);
+  //   }
+  // };
 
   // call when a connection is established and ready to be used
   webSocket.onopen = event => {

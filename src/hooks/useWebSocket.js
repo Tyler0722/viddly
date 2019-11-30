@@ -3,7 +3,7 @@ import queryString from "query-string";
 
 import { createOrJoinSocket, attachListeners, connectionStatus } from "helpers/websocket";
 
-const useWebSocket = (url, options = {}) => {
+export const useWebSocket = (url, options = {}) => {
   const [readyState, setReadyState] = useState({});
 
   const webSocketRef = useRef(null);
@@ -12,6 +12,9 @@ const useWebSocket = (url, options = {}) => {
     const { queryParams } = options;
     url += "?" + queryString.stringify(queryParams);
     createOrJoinSocket(webSocketRef, url, setReadyState);
+  }, []);
+
+  useEffect(() => {
     const listenersFunc = attachListeners(webSocketRef.current, url, setReadyState, options);
     return listenersFunc;
   }, []);
@@ -25,7 +28,5 @@ const useWebSocket = (url, options = {}) => {
 
   const readyStateFromUrl = readyState[url] !== undefined ? readyState[url] : connectionStatus.CONNECTING;
 
-  return [send, readyStateFromUrl];
+  return { send, readyState: readyStateFromUrl, webSocketRef };
 };
-
-export default useWebSocket;

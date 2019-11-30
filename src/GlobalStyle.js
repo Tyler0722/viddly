@@ -9,9 +9,15 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
   }
 
+  html {
+    font-size: 62.5%;
+  }
+
   body {
+    background-color: #03060D;
     font-family: ${(props) => props.theme.base.fontFamily};
     font-weight: 400;
+    font-size: 1.6rem;
   }
 
   button, input, textarea {

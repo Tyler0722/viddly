@@ -8,7 +8,7 @@ const Profile = (props) => {
   return (
     <div>
       <img src={profile.profile_pic} />
-      <div>{profile.id}</div>
+      <div>{profile.username}</div>
     </div>
   );
 };

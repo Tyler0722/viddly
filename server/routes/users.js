@@ -27,4 +27,15 @@ router.put("/me", (req, res) => {
   });
 });
 
+router.post("/:uid/:choice(like|dislike)", (req, res) => {
+  const { uid, choice } = req.params;
+  const isLiked = choice === "like";
+
+  const query =
+    'INSERT INTO "liked_user" VALUES ($1, $2, $3) ON CONFLICT (user_id, liked_by) DO NOTHING';
+  db.query(query, [uid, req.session.uid, isLiked]).then((result) => {
+    res.send();
+  });
+});
+
 module.exports = router;
